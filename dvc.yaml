@@ -1,0 +1,36 @@
+stages:
+  validate_raw:
+    cmd: python -m src.data_prep.quality_filter --data-root data/raw --report-path data/processed/quality_report.json
+    deps:
+      - src/data_prep/quality_filter.py
+      - data/raw/rees46
+      - data/raw/hillstrom
+      - data/raw/criteo_uplift
+      - data/raw/tiki_shopee_catalog
+    metrics:
+      - data/processed/quality_report.json:
+          cache: false
+
+  build_features:
+    cmd: python -m src.data_prep.feature_engineering --raw-dir data/raw --output-dir data/processed/ml --llm-output-dir data/processed/llm --schema-path configs/feature_schema.yaml
+    deps:
+      - data/processed/quality_report.json
+      - configs/feature_schema.yaml
+      - src/data_prep/rees46_processor.py
+      - src/data_prep/hillstrom_processor.py
+      - src/data_prep/catalog_loader.py
+      - src/data_prep/feature_engineering.py
+    outs:
+      - data/processed/ml/intent_train.parquet
+      - data/processed/ml/intent_eval.parquet
+      - data/processed/ml/churn_train.parquet
+      - data/processed/ml/churn_eval.parquet
+      - data/processed/ml/uplift_train.parquet
+      - data/processed/ml/uplift_eval.parquet
+      - data/processed/ml/timing_train.parquet
+      - data/processed/ml/timing_eval.parquet
+      - data/processed/ml/channel_train.parquet
+      - data/processed/ml/channel_eval.parquet
+    metrics:
+      - data/processed/ml/feature_pipeline_summary.json:
+          cache: false

@@ -1,0 +1,18 @@
+model_name: "churn_predictor"
+experiment_name: "cart-abandon/ml/churn-predictor"
+train_data: "data/processed/ml/churn_train.parquet"
+eval_data: "data/processed/ml/churn_eval.parquet"
+quality_gate:
+  metric: "auc_roc"
+  min_threshold: 0.75
+hyperparameters:
+  objective: "binary:logistic"
+  eval_metric: "auc"
+  tree_method: "hist"
+  learning_rate: 0.05
+  max_depth: 6
+  subsample: 0.8
+  colsample_bytree: 0.8
+  n_estimators: 800
+  early_stopping_rounds: 50
+  random_state: 42

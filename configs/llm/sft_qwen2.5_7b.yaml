@@ -1,0 +1,23 @@
+base_model: "Qwen/Qwen2.5-7B-Instruct"
+experiment_name: "cart-abandon/llm/sft-finetune"
+train_file: "data/processed/llm/sft_train.jsonl"
+eval_file: "data/processed/llm/sft_eval.jsonl"
+output_dir: "models/qwen2.5-7b-cart-sft"
+max_seq_length: 2048
+qlora:
+  load_in_4bit: true
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_compute_dtype: "bfloat16"
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+training:
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  learning_rate: 0.0002
+  num_train_epochs: 3
+  warmup_ratio: 0.05
+  lr_scheduler_type: "cosine"
+  bf16: true
+  logging_steps: 20
+  eval_steps: 100

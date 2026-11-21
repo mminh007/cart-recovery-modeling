@@ -1,0 +1,80 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Test & linter caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Raw, Processed & Generated Data (Tracked by DVC, NEVER push to GitHub)
+# Keep directory structure via .gitkeep only
+/data/raw/**
+!/data/raw/
+!/data/raw/*/
+!/data/raw/.gitkeep
+!/data/raw/*/.gitkeep
+
+/data/processed/**
+!/data/processed/
+!/data/processed/*/
+!/data/processed/.gitkeep
+!/data/processed/*/.gitkeep
+
+/data/synthetic/generated/**
+!/data/synthetic/generated/
+!/data/synthetic/generated/.gitkeep
+
+# MLflow, Airflow & W&B runtime artifacts
+mlruns/
+mlartifacts/
+airflow_home/
+wandb/
+unsloth_compiled_cache/
+huggingface_cache/
+logs/
+*.db
+*.sqlite
+
+# Model checkpoints, LoRA adapters & serialized weights (Push to MLflow / HF Hub, NOT GitHub)
+models/
+checkpoints/
+exported_models/
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.onnx
+*.pkl
+*.joblib
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Secrets, API keys & SSH keys (CRITICAL: NEVER push to GitHub)
+.env
+.env.*
+!.env.example
+kaggle.json
+*.pem
+*.key
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,288 @@
+schema_version: "1.0.0"
+project: "cart-abandonment-ai"
+description: "Shared feature contract between Repo 1 (Training) and Repo 2 (LangGraph Serving)"
+
+models:
+  intent_classifier:
+    model_type: "lightgbm_binary"
+    entity_keys: ["user_id", "user_session"]
+    timestamp_col: "cart_abandon_time"
+    target:
+      name: "purchased_within_7d"
+      dtype: "int"
+      min_value: 0
+      max_value: 1
+    features:
+      - name: "session_duration_sec"
+        dtype: "float"
+        min_value: 0.0
+        group: "session"
+      - name: "session_views_count"
+        dtype: "int"
+        min_value: 0
+        group: "session"
+      - name: "session_categories_count"
+        dtype: "int"
+        min_value: 0
+        group: "session"
+      - name: "session_brands_count"
+        dtype: "int"
+        min_value: 0
+        group: "session"
+      - name: "cart_items_count"
+        dtype: "int"
+        min_value: 1
+        group: "cart"
+      - name: "cart_total_value"
+        dtype: "float"
+        min_value: 0.0
+        group: "cart"
+      - name: "cart_avg_price"
+        dtype: "float"
+        min_value: 0.0
+        group: "cart"
+      - name: "cart_max_price"
+        dtype: "float"
+        min_value: 0.0
+        group: "cart"
+      - name: "has_removed_from_cart"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "cart"
+      - name: "prior_sessions_count"
+        dtype: "int"
+        min_value: 0
+        group: "historical"
+      - name: "prior_views_count"
+        dtype: "int"
+        min_value: 0
+        group: "historical"
+      - name: "prior_purchases_count"
+        dtype: "int"
+        min_value: 0
+        group: "historical"
+      - name: "prior_conversion_rate"
+        dtype: "float"
+        min_value: 0.0
+        max_value: 1.0
+        group: "historical"
+      - name: "days_since_first_seen"
+        dtype: "float"
+        min_value: 0.0
+        group: "historical"
+      - name: "event_hour"
+        dtype: "int"
+        min_value: 0
+        max_value: 23
+        group: "context"
+      - name: "day_of_week"
+        dtype: "int"
+        min_value: 0
+        max_value: 6
+        group: "context"
+      - name: "is_weekend"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "context"
+
+  churn_predictor:
+    model_type: "xgboost_binary"
+    entity_keys: ["user_id"]
+    timestamp_col: "cutoff_time"
+    target:
+      name: "churned_30d"
+      dtype: "int"
+      min_value: 0
+      max_value: 1
+    features:
+      - name: "recency_days"
+        dtype: "float"
+        min_value: 0.0
+        group: "recency"
+      - name: "sessions_count_30d"
+        dtype: "int"
+        min_value: 1
+        group: "frequency"
+      - name: "events_count_30d"
+        dtype: "int"
+        min_value: 1
+        group: "frequency"
+      - name: "total_spend_30d"
+        dtype: "float"
+        min_value: 0.0
+        group: "monetary"
+      - name: "avg_order_value"
+        dtype: "float"
+        min_value: 0.0
+        group: "monetary"
+      - name: "pages_per_session"
+        dtype: "float"
+        min_value: 0.0
+        group: "engagement"
+      - name: "cart_abandon_rate"
+        dtype: "float"
+        min_value: 0.0
+        max_value: 1.0
+        group: "engagement"
+      - name: "activity_trend_ratio"
+        dtype: "float"
+        min_value: 0.0
+        group: "trend"
+
+  uplift_model:
+    model_type: "causalml_uplift"
+    entity_keys: ["customer_id"]
+    treatment_col: "treatment"
+    segment_col: "treatment_segment"
+    target:
+      name: "conversion"
+      dtype: "int"
+      min_value: 0
+      max_value: 1
+    auxiliary_targets: ["visit", "spend"]
+    features:
+      - name: "recency"
+        dtype: "int"
+        min_value: 0
+        group: "rfm"
+      - name: "history"
+        dtype: "float"
+        min_value: 0.0
+        group: "rfm"
+      - name: "mens"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "category_affinity"
+      - name: "womens"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "category_affinity"
+      - name: "newbie"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "tenure"
+      - name: "zip_urban"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "geo"
+      - name: "zip_surburban"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "geo"
+      - name: "zip_rural"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "geo"
+      - name: "channel_web"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "channel"
+      - name: "channel_phone"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "channel"
+      - name: "channel_multichannel"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "channel"
+
+  timing_optimizer:
+    model_type: "cox_proportional_hazards"
+    entity_keys: ["user_id", "user_session"]
+    duration_col: "hours_until_return"
+    target:
+      name: "event_returned"
+      dtype: "int"
+      min_value: 0
+      max_value: 1
+    features:
+      - name: "abandon_hour"
+        dtype: "int"
+        min_value: 0
+        max_value: 23
+        group: "temporal"
+      - name: "abandon_day_of_week"
+        dtype: "int"
+        min_value: 0
+        max_value: 6
+        group: "temporal"
+      - name: "is_weekend"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "temporal"
+      - name: "cart_total_value"
+        dtype: "float"
+        min_value: 0.0
+        group: "cart"
+      - name: "prior_sessions_count"
+        dtype: "int"
+        min_value: 0
+        group: "historical"
+      - name: "preferred_active_hour"
+        dtype: "int"
+        min_value: 0
+        max_value: 23
+        group: "historical"
+
+  channel_selector:
+    model_type: "lightgbm_multiclass"
+    entity_keys: ["customer_id"]
+    target:
+      name: "optimal_channel"
+      dtype: "str"
+    features:
+      - name: "recency"
+        dtype: "int"
+        min_value: 0
+        group: "rfm"
+      - name: "history"
+        dtype: "float"
+        min_value: 0.0
+        group: "rfm"
+      - name: "mens"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "affinity"
+      - name: "womens"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "affinity"
+      - name: "newbie"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "tenure"
+      - name: "channel_web"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "channel"
+      - name: "channel_phone"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "channel"
+      - name: "channel_multichannel"
+        dtype: "int"
+        min_value: 0
+        max_value: 1
+        group: "channel"
+      - name: "mobile_affinity_score"
+        dtype: "float"
+        min_value: 0.0
+        max_value: 1.0
+        group: "device"

@@ -1,0 +1,12 @@
+model_id: "your-hf-org/qwen2.5-7b-cart-recovery-awq"
+quantization: "awq"
+dtype: "half"
+host: "0.0.0.0"
+port: 8000
+gpu_memory_utilization: 0.85
+max_model_len: 2048
+max_num_seqs: 64
+guided_decoding_backend: "outlines"
+sla_targets:
+  p95_latency_ms: 500
+  min_throughput_rps: 50

@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cart-abandonment-modeling"
+version = "0.1.0"
+description = "Repo 1/3: Tabular ML Models, MLOps Data Pipeline, and Vietnamese LLM Fine-tuning for Cart Abandonment Recovery"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Cart Abandonment AI Team" }
+]
+dependencies = [
+    "numpy>=1.26.0",
+    "pandas>=2.1.0",
+    "pyarrow>=14.0.0",
+    "pydantic>=2.5.0",
+    "pyyaml>=6.0.1",
+    "scikit-learn>=1.4.0",
+    "tqdm>=4.66.0",
+]
+
+[project.optional-dependencies]
+ml = [
+    "lightgbm>=4.2.0",
+    "xgboost>=2.0.3",
+    "optuna>=3.5.0",
+    "lifelines>=0.28.0",
+    "shap>=0.44.0",
+    "onnx>=1.15.0",
+    "onnxmltools>=1.12.0",
+]
+mlops = [
+    "mlflow>=2.10.0",
+    "dvc>=3.40.0",
+    "kaggle>=1.6.0",
+    "fsspec>=2024.2.0",
+    "s3fs>=2024.2.0",
+    "gcsfs>=2024.2.0",
+]
+eda = [
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    "plotly>=5.18.0",
+    "jupyterlab>=4.0.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.3.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

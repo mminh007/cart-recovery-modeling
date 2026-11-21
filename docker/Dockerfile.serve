@@ -1,0 +1,7 @@
+FROM vllm/vllm-openai:latest
+
+WORKDIR /workspace
+COPY configs/llm/vllm_serving.yaml /workspace/configs/llm/vllm_serving.yaml
+
+EXPOSE 8000
+ENTRYPOINT ["vllm", "serve"]

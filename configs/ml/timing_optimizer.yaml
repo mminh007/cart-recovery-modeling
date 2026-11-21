@@ -1,0 +1,11 @@
+model_name: "timing_optimizer"
+experiment_name: "cart-abandon/ml/timing-optimizer"
+train_data: "data/processed/ml/timing_train.parquet"
+eval_data: "data/processed/ml/timing_eval.parquet"
+quality_gate:
+  metric: "c_index"
+  min_threshold: 0.65
+hyperparameters:
+  penalizer: 0.01
+  l1_ratio: 0.0
+  prediction_horizon_hours: 48

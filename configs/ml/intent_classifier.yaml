@@ -1,0 +1,21 @@
+model_name: "intent_classifier"
+experiment_name: "cart-abandon/ml/intent-classifier"
+train_data: "data/processed/ml/intent_train.parquet"
+eval_data: "data/processed/ml/intent_eval.parquet"
+quality_gate:
+  metric: "auc_roc"
+  min_threshold: 0.80
+hyperparameters:
+  objective: "binary"
+  metric: "auc"
+  boosting_type: "gbdt"
+  learning_rate: 0.05
+  num_leaves: 63
+  max_depth: 8
+  min_child_samples: 50
+  subsample: 0.8
+  colsample_bytree: 0.8
+  is_unbalance: true
+  n_estimators: 1000
+  early_stopping_rounds: 50
+  random_state: 42

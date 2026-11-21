@@ -1,0 +1,12 @@
+FROM python:3.11-slim
+
+WORKDIR /workspace
+
+COPY pyproject.toml README.md ./
+COPY src ./src
+COPY configs ./configs
+COPY scripts ./scripts
+
+RUN pip install --no-cache-dir -e ".[ml,mlops]"
+
+CMD ["python", "-m", "src.data_prep.feature_engineering"]

@@ -1,0 +1,14 @@
+model_name: "channel_selector"
+experiment_name: "cart-abandon/ml/channel-selector"
+train_data: "data/processed/ml/channel_train.parquet"
+eval_data: "data/processed/ml/channel_eval.parquet"
+quality_gate:
+  metric: "accuracy"
+  min_threshold: 0.70
+hyperparameters:
+  objective: "multiclass"
+  num_class: 4
+  learning_rate: 0.05
+  num_leaves: 31
+  n_estimators: 400
+  random_state: 42

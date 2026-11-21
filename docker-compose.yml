@@ -1,0 +1,80 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cart-abandon-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-airflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-airflow}
+      POSTGRES_DB: ${POSTGRES_DB:-airflow}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-airflow}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.16.2
+    container_name: cart-abandon-mlflow
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/mlflow/mlruns
+      - ./mlartifacts:/mlflow/mlartifacts
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////mlflow/mlruns/mlflow.db
+      --default-artifact-root /mlflow/mlartifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  airflow:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.airflow
+    container_name: cart-abandon-airflow
+    ports:
+      - "8080:8080"
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER:-airflow}:${POSTGRES_PASSWORD:-airflow}@postgres:5432/${POSTGRES_DB:-airflow}
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      PYTHONPATH: /opt/airflow/repo
+      DATA_ROOT: /opt/airflow/repo/data
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      STORAGE_BACKEND: ${STORAGE_BACKEND:-local}
+      USE_SYNTHETIC_DEMO: ${USE_SYNTHETIC_DEMO:-true}
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/repo/src
+      - ./configs:/opt/airflow/repo/configs
+      - ./scripts:/opt/airflow/repo/scripts
+      - ./data:/opt/airflow/repo/data
+    command: standalone
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mlflow:
+        condition: service_started
+
+  jupyter:
+    image: quay.io/jupyter/scipy-notebook:python-3.11
+    container_name: cart-abandon-jupyter
+    ports:
+      - "8888:8888"
+    environment:
+      JUPYTER_TOKEN: cart-abandon
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      PYTHONPATH: /home/jovyan/work
+    volumes:
+      - ./notebooks:/home/jovyan/work/notebooks
+      - ./src:/home/jovyan/work/src
+      - ./configs:/home/jovyan/work/configs
+      - ./data:/home/jovyan/work/data
+
+volumes:
+  postgres_data:

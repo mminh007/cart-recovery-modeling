@@ -1,0 +1,15 @@
+model_name: "uplift_model"
+experiment_name: "cart-abandon/ml/uplift-model"
+train_data: "data/processed/ml/uplift_train.parquet"
+eval_data: "data/processed/ml/uplift_eval.parquet"
+quality_gate:
+  metric: "auuc"
+  min_threshold: 0.03
+hyperparameters:
+  meta_learner: "XLearner"
+  base_algo: "lightgbm"
+  control_name: 0
+  n_estimators: 300
+  max_depth: 5
+  learning_rate: 0.05
+  random_state: 42

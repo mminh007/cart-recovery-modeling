@@ -1,0 +1,13 @@
+sft_adapter_path: "models/qwen2.5-7b-cart-sft"
+experiment_name: "cart-abandon/llm/dpo-alignment"
+dpo_file: "data/processed/llm/dpo_pairs.jsonl"
+output_dir: "models/qwen2.5-7b-cart-dpo"
+beta: 0.1
+max_length: 2048
+max_prompt_length: 1024
+training:
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  learning_rate: 0.000005
+  num_train_epochs: 2
+  bf16: true
